@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
-    protected User $user;
+    private User $user;
 
     public function __construct()
     {

@@ -20,6 +20,8 @@ class ResetPasswordController extends Controller
     }
 
     /**
+     * Reset Password
+     *
      * @param ResetPasswordRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
