@@ -2,12 +2,14 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "News Aggregator API Challenge is a home Challenge Task for Backend Laravel Developer Position.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "dedoc/scramble": "^0.11.27",
         "laravel/framework": "^11.31",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
