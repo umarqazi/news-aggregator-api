@@ -59,4 +59,30 @@ class ArticleRepository
     {
         return $this->article->findOrFail($id);
     }
+
+
+    /**
+     * Fetch News Articles based on User Preferences.
+     *
+     * @param array $preferences
+     * @return LengthAwarePaginator
+     */
+    public function fetchPersonalizedNewsFeed(array $preferences): LengthAwarePaginator
+    {
+        $query = $this->article->query();
+
+        if (!empty($preferences['preferred_categories'])) {
+            $query->whereIn('category', $preferences['preferred_categories']);
+        }
+
+        if (!empty($preferences['preferred_sources'])) {
+            $query->whereIn('source', $preferences['preferred_sources']);
+        }
+
+        if (!empty($preferences['preferred_authors'])) {
+            $query->whereIn('source', $preferences['preferred_authors']);
+        }
+
+        return $query->paginate(10);
+    }
 }
