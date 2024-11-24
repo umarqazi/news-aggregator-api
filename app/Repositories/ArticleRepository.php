@@ -60,6 +60,17 @@ class ArticleRepository
         return $this->article->findOrFail($id);
     }
 
+    /**
+     * Create New Article
+     *
+     * @param array $data
+     * @return Article
+     */
+    public function create(array $data): Article
+    {
+        return $this->article->create($data);
+    }
+
 
     /**
      * Fetch News Articles based on User Preferences.
