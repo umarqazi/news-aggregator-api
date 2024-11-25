@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Services\NewsAggregatorService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class FetchArticles extends Command
 {
@@ -39,10 +40,12 @@ class FetchArticles extends Command
     public function handle(): void
     {
         $this->info('Fetching Articles...');
+        Log::info('Fetching Articles...');
 
         // Fetch and Store Articles in Database.
         $this->newsAggregatorService->fetchAndStoreArticles();
 
         $this->info('Articles fetched and stored successfully.');
+        Log::info('Articles fetched.');
     }
 }
