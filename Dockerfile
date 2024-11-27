@@ -45,14 +45,10 @@ RUN chmod 0644 /etc/cron.d/schedule \
 RUN touch /var/log/cron.log && chmod 0666 /var/log/cron.log
 
 # Ensure the required Laravel directories have correct permissions
-#RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
-#    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
-
-# Ensure the required Laravel directories have correct ownership and permissions
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && find /var/www/storage /var/www/bootstrap/cache -type d -exec chmod 775 {} \; \
-    && find /var/www/storage /var/www/bootstrap/cache -type f -exec chmod 664 {} \;
-
+    && find /var/www/storage /var/www/bootstrap/cache -type f -exec chmod 664 {} \; \
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
