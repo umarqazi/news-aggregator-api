@@ -9,12 +9,6 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
             MYSQL_DATABASE: news_aggregator_api
-            DB_CONNECTION: mysql
-            DB_HOST: news-db
-            DB_PORT: 3307
-            DB_DATABASE: news_aggregator_api
-            DB_USERNAME: root
-            DB_PASSWORD: ${DB_PASSWORD}
         ports:
             - "3307:3306"
         volumes:
@@ -54,13 +48,6 @@ services:
                 condition: service_healthy
         networks:
             - app-network
-        ports:
-            - "9000:9000"
-        healthcheck:
-            test: [ "CMD", "curl", "-f", "http://localhost:9000" ]
-            interval: 30s
-            timeout: 10s
-            retries: 3
 
     # Nginx Web Server
     nginx:
