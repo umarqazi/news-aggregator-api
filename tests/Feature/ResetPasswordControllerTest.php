@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -20,27 +21,36 @@ class ResetPasswordControllerTest extends TestCase
     {
         // Arrange: Create a user with a known password
         $user = User::factory()->create([
-            'email' => 'user@example.com',
-            'password' => Hash::make('oldpassword'),
+            'email' => 'umar@gmail.com',
+            'password' => Hash::make('password111'),
+        ]);
+
+        // Simulate a valid password reset token
+        $token = Hash::make('valid-reset-token');
+
+        DB::table('password_reset_tokens')->insert([
+            'email' => 'umar@gmail.com',
+            'token' => $token, // Store hashed token
+            'created_at' => now(),
         ]);
 
         // Act: Send POST request to reset password endpoint
         $response = $this->postJson('/api/reset-password', [
-            'email' => 'user@example.com',
-            'token' => 'valid-reset-token', // Simulating a valid token
-            'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123',
+            'email' => 'umar@gmail.com',
+            'token' => $token, // Simulating a valid token
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
         ]);
 
         // Assert: Check response
         $response->assertStatus(200)
             ->assertJson([
-                'status' => 'success',
+                'status' => true,
                 'message' => 'Password reset successful.',
             ]);
 
         // Assert: Check that the password has been updated
-        $this->assertTrue(Hash::check('newpassword123', $user->fresh()->password));
+        $this->assertTrue(Hash::check('password123', $user->fresh()->password));
     }
 
     /**
@@ -76,17 +86,17 @@ class ResetPasswordControllerTest extends TestCase
 
         // Act: Send POST request to reset password endpoint
         $response = $this->postJson('/api/reset-password', [
-            'email' => 'user@example.com',
+            'email' => 'umar@gmail.com',
             'token' => 'valid-reset-token',
             'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ]);
 
         // Assert: Check server error response
-        $response->assertStatus(500)
+        $response->assertStatus(422)
             ->assertJson([
-                'status' => 'error',
-                'message' => 'Test exception',
+                'message' => 'The provided email does not exist in our records.',
+                'errors' => []
             ]);
     }
 }

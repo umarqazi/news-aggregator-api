@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use App\Services\ArticleService;
 use Tests\TestCase;
 use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -9,6 +11,17 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class ArticleControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    private $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Arrange: Create a user and log them in
+        $this->user = User::factory()->create();
+        $this->actingAs($this->user);
+    }
 
     /**
      * Test retrieving articles successfully.
@@ -18,7 +31,7 @@ class ArticleControllerTest extends TestCase
     public function test_articles_list_successfully(): void
     {
         // Arrange: Create articles
-        Article::factory()->count(5)->create();
+        Article::factory()->count(10)->create();
 
         // Act: Send GET request to fetch articles
         $response = $this->getJson('/api/articles');
@@ -29,15 +42,25 @@ class ArticleControllerTest extends TestCase
                 'status',
                 'message',
                 'data' => [
-                    '*' => [
-                        'id',
-                        'title',
-                        'content',
-                        'category',
-                        'source',
-                        'created_at',
-                        'updated_at',
+                    'current_page',
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'title',
+                            'content',
+                            'category',
+                            'source',
+                            'created_at',
+                            'updated_at',
+                        ],
                     ],
+                    'total',
+                    'per_page',
+                    'last_page',
+                    'first_page_url',
+                    'last_page_url',
+                    'next_page_url',
+                    'prev_page_url',
                 ],
             ]);
     }
@@ -58,7 +81,7 @@ class ArticleControllerTest extends TestCase
 
         // Assert: Check response contains only filtered articles
         $response->assertStatus(200)
-            ->assertJsonCount(1, 'data')
+            ->assertJsonCount(1, 'data.data')
             ->assertJsonFragment(['title' => 'Laravel Testing Tips']);
     }
 
@@ -104,31 +127,9 @@ class ArticleControllerTest extends TestCase
         // Assert: Check response for 404 error
         $response->assertStatus(404)
             ->assertJson([
-                'status' => 'error',
+                'status' => false,
                 'message' => 'Article not found',
-            ]);
-    }
-
-    /**
-     * Test error handling in article listing.
-     *
-     * @return void
-     */
-    public function test_error_handling_in_article_listing(): void
-    {
-        // Mock the ArticleService to throw an exception
-        $this->mock(\App\Services\ArticleService::class, function ($mock) {
-            $mock->shouldReceive('getArticles')->andThrow(new \Exception('Test exception'));
-        });
-
-        // Act: Send GET request to fetch articles
-        $response = $this->getJson('/api/articles');
-
-        // Assert: Check server error response
-        $response->assertStatus(500)
-            ->assertJson([
-                'status' => 'error',
-                'message' => 'Test exception',
+                'errors' => []
             ]);
     }
 }

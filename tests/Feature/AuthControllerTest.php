@@ -20,13 +20,13 @@ class AuthControllerTest extends TestCase
     {
         // Arrange: Create a user
         $user = User::factory()->create([
-            'email' => 'user@example.com',
+            'email' => 'umarfarooq@gmail.com',
             'password' => Hash::make('password123'),
         ]);
 
         // Act: Send a POST request to login endpoint
         $response = $this->postJson('/api/login', [
-            'email' => 'user@example.com',
+            'email' => 'umarfarooq@gmail.com',
             'password' => 'password123',
         ]);
 
@@ -60,21 +60,22 @@ class AuthControllerTest extends TestCase
     {
         // Arrange: Create a user
         User::factory()->create([
-            'email' => 'user@example.com',
+            'email' => 'umarfarooq@gmail.com',
             'password' => Hash::make('password123'),
         ]);
 
         // Act: Send a POST request with invalid credentials
         $response = $this->postJson('/api/login', [
-            'email' => 'user@example.com',
-            'password' => 'wrongpassword',
+            'email' => 'umarfarooq@gmail.com',
+            'password' => 'password111',
         ]);
 
         // Assert: Check error response
-        $response->assertStatus(422)
+        $response->assertStatus(401)
             ->assertJson([
-                'status' => 'error',
-                'message' => 'Invalid credentials',
+                'status' => false,
+                'message' => 'Invalid credentials.',
+                'errors' => NULL
             ]);
     }
 
@@ -97,7 +98,7 @@ class AuthControllerTest extends TestCase
         // Assert: Check response
         $response->assertStatus(200)
             ->assertJson([
-                'status' => 'success',
+                'status' => true,
                 'message' => 'Successfully logged out',
             ]);
     }
@@ -115,7 +116,6 @@ class AuthControllerTest extends TestCase
         // Assert: Check unauthorized response
         $response->assertStatus(401)
             ->assertJson([
-                'status' => 'error',
                 'message' => 'Unauthenticated.',
             ]);
     }

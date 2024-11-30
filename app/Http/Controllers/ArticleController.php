@@ -36,7 +36,10 @@ class ArticleController extends Controller
                 message: 'Articles retrieved successfully',
             );
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                statusCode: 500
+            );
         }
     }
 

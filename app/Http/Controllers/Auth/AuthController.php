@@ -34,12 +34,10 @@ class AuthController extends Controller
             // Generate token
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            if ($user) {
-                return $this->successResponse(
-                    data: ['user' => $user, 'token' => $token],
-                    message: 'User successfully LoggedIn.'
-                );
-            }
+            return $this->successResponse(
+                data: ['user' => $user, 'token' => $token],
+                message: 'User successfully LoggedIn.'
+            );
         } catch (ValidationException $e) {
             return $this->errorResponse(
                 message: $e->getMessage(),
@@ -48,6 +46,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return $this->errorResponse(
                 message: $e->getMessage(),
+                statusCode: $e->getCode() ?: 500,
             );
         }
     }

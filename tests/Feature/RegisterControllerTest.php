@@ -20,8 +20,8 @@ class RegisterControllerTest extends TestCase
     {
         // Arrange: Valid user registration data
         $data = [
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
+            'name' => 'Umar Farooq',
+            'email' => 'umarfarooq@gmail.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ];
@@ -32,7 +32,7 @@ class RegisterControllerTest extends TestCase
         // Assert: Check if the response is successful
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'statusCode',
+                'status',
                 'message',
                 'data' => [
                     'user' => [
@@ -49,8 +49,8 @@ class RegisterControllerTest extends TestCase
 
         // Assert: Check if the user is in the database
         $this->assertDatabaseHas('users', [
-            'name' => 'John Doe',
-            'email' => 'john.doe@example.com',
+            'name' => 'Umar Farooq',
+            'email' => 'umarfarooq@gmail.com',
         ]);
     }
 
@@ -61,17 +61,14 @@ class RegisterControllerTest extends TestCase
      */
     public function test_registration_with_validation_errors(): void
     {
-        // Arrange: Invalid user registration data
         $data = [
-            'name' => '', // Missing name
-            'email' => 'invalid-email', // Invalid email
-            'password' => 'short', // Password too short
+            'name' => '',
+            'email' => 'umarfarooq',
+            'password' => '12345',
         ];
 
-        // Act: Send a POST request to the register endpoint
         $response = $this->postJson('/api/register', $data);
 
-        // Assert: Check if the response contains validation errors
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
@@ -83,16 +80,16 @@ class RegisterControllerTest extends TestCase
      */
     public function test_registration_with_duplicate_email(): void
     {
-        // Arrange: Create an existing user
+        // Create an existing user with same Email
         User::factory()->create([
-            'email' => 'duplicate@example.com',
+            'email' => 'umarfarooq@gmail.com',
             'password' => Hash::make('password123'),
         ]);
 
         // Duplicate registration data
         $data = [
-            'name' => 'Jane Doe',
-            'email' => 'duplicate@example.com', // Duplicate email
+            'name' => 'Umar Farooq',
+            'email' => 'umarfarooq@gmail.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ];

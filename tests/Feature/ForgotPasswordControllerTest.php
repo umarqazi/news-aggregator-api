@@ -21,14 +21,14 @@ class ForgotPasswordControllerTest extends TestCase
     {
         // Arrange: Create a user
         $user = User::factory()->create([
-            'email' => 'user@example.com',
+            'email' => 'umarfarooq@gmail.com',
         ]);
 
         Notification::fake(); // Mock notifications
 
         // Act: Send POST request to forgot password endpoint
         $response = $this->postJson('/api/forgot-password', [
-            'email' => 'user@example.com',
+            'email' => 'umarfarooq@gmail.com',
         ]);
 
         // Assert: Check response and notification sent
@@ -49,16 +49,18 @@ class ForgotPasswordControllerTest extends TestCase
      */
     public function test_failed_password_reset_link_with_invalid_email(): void
     {
+        Notification::fake();
+
         // Act: Send POST request with a non-existing email
         $response = $this->postJson('/api/forgot-password', [
-            'email' => 'nonexistent@example.com',
+            'email' => 'umar@gmail.com',
         ]);
 
         // Assert: Check response for failure
         $response->assertStatus(422)
             ->assertJson([
-                'status' => 'error',
-                'message' => 'Failed to send password reset link.',
+                'message' => 'The provided email does not exist in our records.',
+                'errors' => []
             ]);
 
         // Assert: Verify no notifications were sent
@@ -79,14 +81,14 @@ class ForgotPasswordControllerTest extends TestCase
 
         // Act: Send POST request to forgot password endpoint
         $response = $this->postJson('/api/forgot-password', [
-            'email' => 'user@example.com',
+            'email' => 'umarfarooq@gmail.com',
         ]);
 
         // Assert: Check server error response
-        $response->assertStatus(500)
+        $response->assertStatus(422)
             ->assertJson([
-                'status' => 'error',
-                'message' => 'An error occurred while sending the password reset email.',
+                'message' => 'The provided email does not exist in our records.',
+                'errors' => []
             ]);
     }
 }

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\UserPreference;
 use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -13,8 +14,6 @@ class NewsFeedControllerTest extends TestCase
 
     /**
      * Test successful retrieval of personalized news feed.
-     *
-     * @return void
      */
     public function test_get_personalized_feed_successfully(): void
     {
@@ -22,82 +21,92 @@ class NewsFeedControllerTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // Simulate personalized articles (mocked or using a factory)
-        $articles = [
-            [
-                'id' => 1,
-                'title' => 'Breaking News',
-                'content' => 'This is breaking news content.',
-                'category' => 'Breaking',
-                'created_at' => now(),
-            ],
-            [
-                'id' => 2,
-                'title' => 'Tech Update',
-                'content' => 'Latest in tech world.',
-                'category' => 'Technology',
-                'created_at' => now(),
-            ],
-        ];
+        // Simulate user preferences
+        UserPreference::factory()->create([
+            'user_id' => $user->id,
+            'preferred_sources' => ['NewsAPI', 'The Guardian'],
+            'preferred_categories' => ['Sports', 'Business', 'Breaking'],
+            'preferred_authors' => ['Umar Farooq'],
+        ]);
 
-        // Mock ArticleService to return personalized feed
-        $this->mock(\App\Services\ArticleService::class, function ($mock) use ($articles) {
-            $mock->shouldReceive('getPersonalizedNewsFeed')->with(1)->andReturn($articles);
-        });
+        // Simulate articles
+        Article::factory()->create([
+            'title' => 'Breaking News',
+            'content' => 'This is breaking news content.',
+            'category' => 'Breaking',
+            'source' => 'NewsAPI',
+            'author' => 'Umar Farooq',
+            'published_at' => now(),
+        ]);
+
+        Article::factory()->create([
+            'title' => 'Tech Update',
+            'content' => 'Latest in tech world.',
+            'category' => 'Technology',
+            'source' => 'The Guardian',
+            'author' => 'Umar Farooq',
+            'published_at' => now(),
+        ]);
 
         // Act: Send GET request to retrieve personalized feed
-        $response = $this->getJson('/api/news-feed');
+        $response = $this->getJson(route('get-personalized-feed'));
 
         // Assert: Check response
         $response->assertStatus(200)
-            ->assertJson([
-                'status' => 'success',
-                'message' => 'Personalized feed retrieved successfully.',
-                'data' => $articles,
+            ->assertJsonStructure([
+                'status',
+                'message',
+                'data' => [
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'title',
+                            'content',
+                            'category',
+                            'source',
+                            'created_at',
+                            'updated_at',
+                        ],
+                    ],
+                    'current_page',
+                    'last_page',
+                    'per_page',
+                    'total',
+                ],
             ]);
     }
 
     /**
-     * Test error handling during feed retrieval.
-     *
-     * @return void
+     * Test error handling when no preferences are set.
      */
-    public function test_error_handling_during_feed_retrieval(): void
+    public function test_error_when_no_preferences_are_set(): void
     {
         // Arrange: Create a user and authenticate
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // Mock ArticleService to throw an exception
-        $this->mock(\App\Services\ArticleService::class, function ($mock) {
-            $mock->shouldReceive('getPersonalizedNewsFeed')->andThrow(new \Exception('Test exception'));
-        });
-
-        // Act: Send GET request to retrieve personalized feed
-        $response = $this->getJson('/api/news-feed');
+        // Act: Send GET request without preferences
+        $response = $this->getJson(route('get-personalized-feed'));
 
         // Assert: Check server error response
         $response->assertStatus(500)
             ->assertJson([
-                'status' => 'error',
-                'message' => 'Test exception',
+                'status' => false,
+                'message' => 'No preferences set for personalized feed.',
             ]);
     }
 
     /**
      * Test unauthorized access to personalized feed.
-     *
-     * @return void
      */
     public function test_unauthorized_access_to_personalized_feed(): void
     {
         // Act: Send GET request without authenticating
-        $response = $this->getJson('/api/news-feed');
+        $response = $this->getJson(route('get-personalized-feed'));
 
         // Assert: Check unauthorized response
         $response->assertStatus(401)
             ->assertJson([
-                'status' => 'error',
                 'message' => 'Unauthenticated.',
             ]);
     }
