@@ -34,11 +34,7 @@ class UserService
     {
         $user = $this->userRepository->findUserByEmail($data['email']);
         if (!$user || !Hash::check($data['password'], $user->password)) {
-            if (!$user) {
-                throw new \Exception('User not found.');
-            } else {
-                throw new \Exception('Password is not correct.');
-            }
+            throw new \Exception('Invalid credentials.', 401);
         }
 
         return $user;

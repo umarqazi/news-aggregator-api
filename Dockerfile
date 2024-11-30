@@ -48,7 +48,7 @@ RUN touch /var/log/cron.log && chmod 0666 /var/log/cron.log
 RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && find /var/www/storage /var/www/bootstrap/cache -type d -exec chmod 775 {} \; \
-    && find /var/www/storage /var/www/bootstrap/cache -type f -exec chmod 664 {} \; \
+    && find /var/www/storage /var/www/bootstrap/cache -type f -exec chmod 664 {} \;
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000

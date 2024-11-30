@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class UserPreferenceController extends Controller
 {
     use ApiResponse;
+
     private UserPreferenceService $userPreferenceService;
 
     public function __construct(UserPreferenceService $userPreferenceService)
