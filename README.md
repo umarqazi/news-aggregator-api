@@ -1,56 +1,107 @@
+# News Aggregator API
 
-# Overview
-The News Aggregator application is an API based application developed using laravel 11 version, that allows users to input a URL, fetch the website
-data (including the title and meta description), capture a snapshot of the website, and navigate through suggestions.
-The application uses a service and repository pattern to handle business logic and database interactions.
+The News Aggregator API is a Laravel 11-based application designed to provide a comprehensive solution for managing user authentication, articles, user preferences, and data aggregation. This application adopts a clean architecture with separate service and repository layers for streamlined business logic and database interaction management.
 
-### Features
-- Fetch website data including title and meta description.
-- Capture and display a snapshot of the website.
-- Edit the title of fetched suggestions.
-- Navigate between previous and next suggestions.
-- Display a loading overlay while fetching data.
-- Proper validation and error handling.
+---
 
-### Libraries Used in Project
-- PHP - GuzzleHttp - https://github.com/guzzle/guzzle
-- PHP - Browsershot - https://spatie.be/docs/browsershot/v4/introduction
-- NODE - Puppeteer https://www.npmjs.com/package/puppeteer
+## Features
 
-### Project Environments Versions
-Below are versions I have used to complete this Task.
-- PHP version 8.2
-- Composer version 2.6.6
-- Laravel version 11.8.0
+### User Authentication
+- Register a new user.
+- Login and logout functionality.
+- Forgot and reset password workflows.
 
-## Backend Code
-For Back-end I have followed the n-layer Architecture in Laravel. I have created a Service and a Repository Layer.
-Service Layer Handles the Business Logic whereas Repo layer handles the data.
+### Article Management
+- Fetch paginated articles.
+- Search articles by keywords.
+- View article details.
 
-# Project Setup using Docker
-- Build project using docker with below given command.
-  - docker compose up --build
-- 
+### User Preferences
+- Set and retrieve user preferences.
+- Generate a personalized news feed based on preferences.
 
-# Project Environment Configurations
-- Copy the .env.example file to .env
-- Go to phpmyadmin/ any database manager and create a new database and update the DB Configurations in .env file.
-- Run a command "which node" and add the binary filepath on a new environment variable "NODE_BINARY_FILE_PATH".
-- Run a command "which npm" and add the binary filepath on a new environment variable "NPM_BINARY_FILE_PATH".
+### Data Aggregation
+- Daily automated news article fetching using CRON jobs from various sources.
 
-### Backend: Commands to run to make site Up
-Go to project folder and run the following commands.
+### API Documentation
+- Comprehensive API documentation powered by tools like Swagger/OpenAPI.
 
-- composer install (if needed)
-- composer dump-autoload
-- php artisan migrate:fresh --seed
-- php artisan:serve --port=8000
-- php artisan storage:link
+---
 
-### Frontend: Commands to run to make site Up
-Go to project folder and run the following commands.
+## Libraries and Tools Used
+- **[Laravel Sanctum](https://github.com/laravel/sanctum):** For API authentication.
+- **[Scramble OpenAPI](https://github.com/dedoc/scramble):** For generating OpenAPI documentation.
 
-- npm install (if needed)
+---
 
-## When Setup is Done
-When everything is set Up goto given link "http://localhost:8000/" in your favourite browser.
+## Project Environment Versions
+The application is developed and tested with the following versions:
+- **PHP:** 8.2
+- **Composer:** 2.6.6
+- **Laravel:** 11.33.2
+
+---
+
+## Architecture
+The application follows an n-layer architecture:
+- **Service Layer:** Handles business logic.
+- **Repository Layer:** Manages database interactions.
+
+This separation ensures a clean and maintainable codebase.
+
+---
+
+## Installation
+
+### Pre-requisites
+- Install Docker
+- Install Docker Compose
+
+### Setup Instructions
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:umarqazi/news-aggregator-api.git
+2. Navigate to the project directory:
+    ```bash
+   cd news-aggregator-api
+3. Copy the environment configuration file:
+    ```bash
+   cp .env.example .env
+4. Update the .env file with the required values, including API keys for news sources.
+5. Build and run the application using Docker:
+
+For Docker Compose (v1):
+   ```bash
+    docker-compose up --build -d
+   ```
+   For Docker Compose (v2+):
+   ```bash
+    docker compose up --build -d
+   ```
+Once the build is complete, the application will be accessible locally.
+
+---
+
+## Accessing the Application
+
+### API Documentation
+- Open your browser and navigate to:
+  - http://localhost:9001/docs/api
+
+### Phpmyadmin
+- Open your browser and navigate to:
+  - http://localhost:8080
+- Login using the database credentials specified in the .env file.
+
+---
+
+## Feature Testing
+To perform the test cases run the below given command with the news-app Container.
+
+With in the news_app container:
+```bash
+     php artisan test
+```
+Outside of the news_app container:
+```bash
+     docker exec -it news_app php artisan test
